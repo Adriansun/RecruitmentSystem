@@ -1,5 +1,4 @@
 # RecruitmentSystem
-04 - Recruitment System <br />
 Språk: Java, JSP, JSF, Javabeans, SQL. <br />
 Modell: MVC, DAO. <br />
 Mjukvarutestning: Selenium, Arquillian.
