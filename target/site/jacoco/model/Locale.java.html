@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Locale.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">Locale.java</span></div><h1>Locale.java</h1><pre class="source lang-java linenums">package model;
+
+import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+
+/**
+ * Class locale decides which language the user will see the homepage.
+ */
+@Entity
+public class Locale implements Serializable {
+    @Id
+    @SequenceGenerator( name = &quot;localeIdSeq&quot;, sequenceName = &quot;LOCALE_ID_SEQ&quot;, allocationSize = 1, initialValue = 1)
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = &quot;localeIdSeq&quot; )
+    @Column(name = &quot;id&quot;)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = &quot;lang_code&quot;, unique = true, nullable = false)
+    private String lang_code;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = &quot;locale&quot;)
+    private Collection&lt;Status_Localized&gt; statusLocalized;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = &quot;locale&quot;)
+    private Collection&lt;Competence_Localized&gt; competenceLocalized;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = &quot;locale&quot;)
+    private Collection&lt;Job_Localized&gt; jobLocalized;
+    
+    /**
+     * Constructor.
+     *
+     * @param lang_code code
+     */
+<span class="nc" id="L43">    public Locale(String lang_code){</span>
+<span class="nc" id="L44">        this.lang_code = lang_code;</span>
+<span class="nc" id="L45">    }</span>
+
+    /**
+     * Constructor.
+     */
+<span class="nc" id="L50">    public Locale() {}</span>
+    
+    /**
+     * Get id of the row which has language.
+     *
+     * @return id of row
+     */
+    public Integer getId() {
+<span class="nc" id="L58">        return id;</span>
+    }
+  
+    /**
+     * Get language code from getId().
+     *
+     * @return lang_code code of language
+     */
+    public String getLangCode(){
+<span class="nc" id="L67">        return lang_code;</span>
+    }
+    
+    /**
+     * Set language code.
+     *
+     * @param lang_code code of language
+     */
+    public void setLangCode(String lang_code){
+<span class="nc" id="L76">        this.lang_code = lang_code;</span>
+<span class="nc" id="L77">    }</span>
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L81">        int hash = 0;</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        hash += (id != null ? id.hashCode() : 0);</span>
+<span class="nc" id="L83">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (!(object instanceof Locale)) {</span>
+<span class="nc" id="L90">            return false;</span>
+        }
+<span class="nc" id="L92">        Locale other = (Locale) object;</span>
+<span class="nc" id="L93">        return this.id.equals(other.id);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L98">        return &quot;model.Locale[ id=&quot; + id + &quot; ]&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

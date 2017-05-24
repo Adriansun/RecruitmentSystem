@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JobManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">view</a> &gt; <span class="el_source">JobManager.java</span></div><h1>JobManager.java</h1><pre class="source lang-java linenums">package view;
+
+import DTO.JobDTO;
+import controller.Controller;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
+
+/**
+ * The class works with everything to do with the job view for the user.
+ */
+@Named(&quot;jobManager&quot;)
+@SessionScoped
+<span class="nc" id="L18">public class JobManager implements Serializable </span>
+{
+    private static final long serialVersionUID = 16247164405L;
+    
+    @EJB
+    Controller controller;
+    
+    private List&lt;JobDTO&gt; jobs;
+    private String currentJob;
+    private Integer currentJobId;
+    
+    /**
+     * Get list with different job types.
+     *
+     * @return list job list
+     */
+    public List getJobs(){
+<span class="nc" id="L35">        List&lt;String&gt; list = new ArrayList();</span>
+        try
+        {
+<span class="nc" id="L38">            jobs = controller.getJobs(FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage());</span>
+        
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            for (JobDTO job : jobs) {</span>
+<span class="nc" id="L41">                list.add(job.getJobTypeName());</span>
+<span class="nc" id="L42">            }</span>
+        }
+<span class="nc" id="L44">        catch(Exception e)</span>
+<span class="nc" id="L45">        {}</span>
+<span class="nc" id="L46">        return list;</span>
+    }
+    
+    /**
+     * Get current job of user.
+     *
+     * @return currentJob current job
+     */
+    public String getCurrentJob()
+    {
+        try
+        {
+<span class="nc" id="L58">            currentJob = controller.getJobNameById(currentJobId, </span>
+<span class="nc" id="L59">                FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage());</span>
+        }
+<span class="nc" id="L61">        catch(Exception e)</span>
+<span class="nc" id="L62">        {}</span>
+<span class="nc" id="L63">        return currentJob;</span>
+    }
+    
+    /**
+     * Set current job.
+     *
+     * @param currentJob current job
+     */
+    public void setCurrentJobId(String currentJob)
+    {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        for (JobDTO job : jobs) </span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if (currentJob.equals(job.getJobTypeName())) </span>
+<span class="nc" id="L75">                currentJobId = job.getJob();</span>
+<span class="nc" id="L76">    }</span>
+    
+    /**
+     * Get id of current job of user.
+     *
+     * @return id of the  current job
+     */
+    public String getCurrentJobId(){
+<span class="nc" id="L84">        return currentJobId.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

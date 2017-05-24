@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LoginManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">view</a> &gt; <span class="el_source">LoginManager.java</span></div><h1>LoginManager.java</h1><pre class="source lang-java linenums">package view;
+
+import java.io.Serializable;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Class takes care of login and logout of user, saves flags for the XHTML 
+ * pages.
+ */
+@ManagedBean(name=&quot;loginManager&quot;)
+@SessionScoped
+<span class="nc" id="L17">public class LoginManager implements Serializable {</span>
+    private static final long serialVersionUID=16247164405L;
+
+    private String username;
+    private String password;
+<span class="nc" id="L22">    private Boolean loginAsApplicantSuccess=false;</span>
+<span class="nc" id="L23">    private Boolean loginAsRecruiterSuccess=false;</span>
+<span class="nc" id="L24">    private Boolean logoutSuccess=true;</span>
+<span class="nc" id="L25">    private Boolean showMessage=false;</span>
+
+    /**
+     * Get HTTP servlet query to log in the user through the JDBC realm on the
+     * Glassfish server. Sets flags at valid points based on user profile.
+     */
+    public void login() {
+<span class="nc" id="L32">        HttpServletRequest request=(HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();</span>
+        try
+        {
+<span class="nc" id="L35">            request.login(username, password);</span>
+<span class="nc" id="L36">            logoutSuccess=false;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            if(request.isUserInRole(&quot;applicant&quot;)) { loginAsApplicantSuccess=true; }</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">            else if(request.isUserInRole(&quot;recruiter&quot;)) { loginAsRecruiterSuccess=true; }</span>
+        }
+<span class="nc" id="L40">        catch(ServletException se) {</span>
+<span class="nc" id="L41">            showMessage=true;</span>
+<span class="nc" id="L42">            username=null;</span>
+<span class="nc" id="L43">        }</span>
+<span class="nc" id="L44">    }</span>
+
+    /**
+     * Get HTTP session to invalidate login. Sets flags according to the user
+     * profile.
+     */
+    public void logout() {
+<span class="nc" id="L51">        HttpSession session=(HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if(loginAsApplicantSuccess) { loginAsApplicantSuccess=false; }</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        else if(loginAsRecruiterSuccess) { loginAsRecruiterSuccess=false; }</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if(session!=null) { session.invalidate(); }</span>
+<span class="nc" id="L55">        logoutSuccess = true;</span>
+<span class="nc" id="L56">    }</span>
+
+    /**
+     * Get user name.
+     *
+     * @return username username
+     */
+    public String getUsername() {
+<span class="nc" id="L64">        return username;</span>
+    }
+
+    /**
+     * Set username for login.
+     *
+     * @param username username
+     */
+    public void setUsername(String username) {
+<span class="nc" id="L73">        this.username=username;</span>
+<span class="nc" id="L74">    }</span>
+
+    /**
+     * Get user password.
+     *
+     * @return password password
+     */
+    public String getPassword() {
+<span class="nc" id="L82">        return password;</span>
+    }
+
+    /**
+     * Set user password for login.
+     *
+     * @param password password
+     */
+    public void setPassword(String password) {
+<span class="nc" id="L91">        this.password=password;</span>
+<span class="nc" id="L92">    }</span>
+
+
+    /**
+     * Get flag for showing error during login for the user.
+     *
+     * @return showMessage shows error message
+     */
+    public Boolean getShowMessage() {
+<span class="nc" id="L101">        return showMessage;</span>
+    }
+
+    /**
+     * Get flag for login success for the user.
+     *
+     * @return loginAsApplicantSuccess boolean
+     */
+    public boolean getLoginAsApplicantSuccess() {
+<span class="nc" id="L110">        return loginAsApplicantSuccess;</span>
+    }
+
+    /**
+     * Get flag for success of login for recruiter.
+     *
+     * @return loginAsRecruiterSuccess boolean
+     */
+    public boolean getLoginAsRecruiterSuccess() {
+<span class="nc" id="L119">        return loginAsRecruiterSuccess;</span>
+    }
+
+    /**
+     * Get flag for success logout of user.
+     *
+     * @return logoutSuccess boolean
+     */
+    public boolean getLogoutSuccess() {
+<span class="nc" id="L128">        return logoutSuccess;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

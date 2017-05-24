@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Application.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">Application.java</span></div><h1>Application.java</h1><pre class="source lang-java linenums">package model;
+
+import DTO.ApplicationDTO;
+import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+
+/**
+ * Application creation class.
+ */
+@Entity
+public class Application implements Serializable, ApplicationDTO
+{
+    @Id
+    @SequenceGenerator(name = &quot;applicationIdSeq&quot;, sequenceName = &quot;APPLICATION_ID_SEQ&quot;, allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = &quot;applicationIdSeq&quot;)
+    @Column(name = &quot;id&quot;)
+    private Integer id;
+    
+    @Basic(optional = false)
+    @Column(name = &quot;date_made&quot;, length = 16, nullable = false)
+    private String date_made;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = &quot;application&quot;)
+    private Collection&lt;Competence_Profile&gt; competenceProfile;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = &quot;application&quot;)
+    private Collection&lt;Availability&gt; availability;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;person&quot;, referencedColumnName = &quot;username&quot;, nullable = false)
+    private Person person;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;status&quot;, referencedColumnName = &quot;id&quot;, nullable = false)
+    private Status status;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;job&quot;, referencedColumnName = &quot;id&quot;, nullable = false)
+    private Job job;
+    
+    /**
+     * Constructor.
+     */
+<span class="nc" id="L55">    public Application(){</span>
+<span class="nc" id="L56">    }</span>
+    
+    /**
+     * Constructor.
+     *
+     * @param date_made date of when application was made
+     * @param person applicant
+     * @param status of the application
+     * @param job the job
+     */
+    public Application(String date_made, Person person, Status status, Job job)
+<span class="nc" id="L67">    {</span>
+<span class="nc" id="L68">        this.date_made = date_made;</span>
+<span class="nc" id="L69">        this.person = person;</span>
+<span class="nc" id="L70">        this.status = status;</span>
+<span class="nc" id="L71">        this.job = job;</span>
+<span class="nc" id="L72">    }</span>
+    
+    /**
+     * Get id of application.
+     * 
+     * @return id of application
+     */
+    @Override
+    public Integer getId() {
+<span class="nc" id="L81">        return id;</span>
+    }
+
+    /**
+     * Get date of when the application was made.
+     *
+     * @return creation date
+     */
+    @Override
+    public String getDateMade(){
+<span class="nc" id="L91">        return date_made;</span>
+    }
+    
+    /**
+     * Set date in database when the application was made.
+     *
+     * @param date_made of application
+     */
+    public void setDateMade(String date_made){
+<span class="nc" id="L100">        this.date_made = date_made;</span>
+<span class="nc" id="L101">    }</span>
+    
+    /**
+     * Get name of user.
+     *
+     * @return username of user
+     */
+    @Override
+    public String getPerson(){
+<span class="nc" id="L110">        return person.getUsername();</span>
+    }
+    
+    /**
+     * Set applicants in to database when application was made.
+     *
+     * @param person the user
+     */
+    public void setPerson(Person person){
+<span class="nc" id="L119">        this.person = person;</span>
+<span class="nc" id="L120">    }</span>
+    
+    /**
+     * Get application status.
+     *
+     * @return id status of id
+     */
+    @Override
+    public Integer getStatus(){
+<span class="nc" id="L129">        return status.getId();</span>
+    }
+    
+    /**
+     * Set status to database of application.
+     *
+     * @param status id status of application
+     */
+    public void setStatus(Status status){
+<span class="nc" id="L138">        this.status = status;</span>
+<span class="nc" id="L139">    }</span>
+    
+    /**
+     * Get id of job from database.
+     *
+     * @return id of a job
+     */
+    @Override
+    public Integer getJob(){
+<span class="nc" id="L148">        return job.getId();</span>
+    }
+    
+    /**
+     * Set a specific job in to database.
+     *
+     * @param job the job
+     */
+    public void setJob(Job job){
+<span class="nc" id="L157">        this.job = job;</span>
+<span class="nc" id="L158">    }</span>
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L162">        int hash = 0;</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        hash += (id != null ? id.hashCode() : 0);</span>
+<span class="nc" id="L164">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object object) 
+    {
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (!(object instanceof Application)) {</span>
+<span class="nc" id="L171">            return false;</span>
+        }
+<span class="nc" id="L173">        Application other = (Application) object;</span>
+<span class="nc" id="L174">        return this.id.equals(other.id);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L179">        return &quot;model.Application[ id=&quot; + id + &quot; ]&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

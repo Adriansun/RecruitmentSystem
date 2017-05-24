@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ApplicationDAO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">integration</a> &gt; <span class="el_source">ApplicationDAO.java</span></div><h1>ApplicationDAO.java</h1><pre class="source lang-java linenums">package integration;
+
+import DTO.ApplicationDTO;
+import DTO.AvailabilityDTO;
+import DTO.CompetenceDTO;
+import DTO.CompetenceProfileDTO;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import model.Application;
+import model.Availability;
+import model.Competence;
+import model.Competence_Profile;
+import model.Job;
+import model.Person;
+import model.Status;
+
+/**
+ * Application class process and sends queries to the database about 
+ * applications.
+ */
+@Stateless
+@TransactionAttribute(TransactionAttributeType.MANDATORY)
+<span class="nc" id="L31">public class ApplicationDAO {</span>
+    @PersistenceContext(unitName = &quot;Projektgrupp9PU&quot;)
+    private EntityManager em;
+    
+    /**
+     * List of all competences.
+     *
+     * @param lang code
+     * @return competenceList list of competences
+     */
+    public List&lt;CompetenceDTO&gt; getAllCompetences(String lang)
+    {
+<span class="nc" id="L43">        Query query = em.createQuery(&quot;SELECT cl FROM Competence_Localized AS cl &quot;</span>
+            + &quot;WHERE cl.locale = (SELECT l FROM Locale AS l WHERE l.lang_code = ?1)&quot;);
+<span class="nc" id="L45">        query.setParameter(1, lang);</span>
+<span class="nc" id="L46">        return query.getResultList();</span>
+    }
+    
+    /**
+     * Send all data to the database of an application.
+     *
+     * @param competenceList list of competences
+     * @param yearsList list of years of competence
+     * @param fromDateList list of start dates
+     * @param toDateList lkist of end dates
+     * @param username of person
+     * @param jobId id of job
+     * @return boolean true if application was success
+     */
+    public Boolean createApplication(ArrayList&lt;String&gt; competenceList, 
+                                     ArrayList&lt;String&gt; yearsList,
+                                     ArrayList&lt;String&gt; fromDateList,
+                                     ArrayList&lt;String&gt; toDateList,
+                                     String username, Integer jobId)
+    {
+<span class="nc" id="L66">        Query query = em.createQuery(&quot;SELECT p FROM Person AS p WHERE p.username = ?1&quot;, Person.class);</span>
+<span class="nc" id="L67">        query.setParameter(1, username);</span>
+<span class="nc" id="L68">        Person person = (Person) query.getSingleResult();</span>
+        
+<span class="nc" id="L70">        query = em.createQuery(&quot;SELECT s FROM Status AS s WHERE s.id = &quot;</span>
+                + &quot;(SELECT sl.status FROM Status_Localized AS sl WHERE sl.statusName = ?1)&quot;, Status.class);
+<span class="nc" id="L72">        query.setParameter(1, &quot;Not reviewed&quot;);</span>
+<span class="nc" id="L73">        Status status = (Status) query.getSingleResult();</span>
+        
+<span class="nc" id="L75">        query = em.createQuery(&quot;SELECT j FROM Job AS j WHERE j.id = ?1&quot;, Job.class);</span>
+<span class="nc" id="L76">        query.setParameter(1, jobId);</span>
+<span class="nc" id="L77">        Job job = (Job) query.getSingleResult();</span>
+        
+<span class="nc" id="L79">        DateFormat dateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;);</span>
+<span class="nc" id="L80">        java.util.Date date = new java.util.Date();</span>
+<span class="nc" id="L81">        String datetime = dateFormat.format(date);</span>
+        
+<span class="nc" id="L83">        Application application = new Application(datetime, person, status, job); </span>
+<span class="nc" id="L84">        em.persist(application);</span>
+        
+        Availability availability;
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for(int i = 0; i &lt; fromDateList.size(); i++)</span>
+        {
+<span class="nc" id="L89">            availability = new Availability</span>
+<span class="nc" id="L90">                           (fromDateList.get(i), toDateList.get(i), application);</span>
+<span class="nc" id="L91">            em.persist(availability);</span>
+        }
+        
+        Competence_Profile competenceProfile;
+        Competence competence;
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        for(int i = 0; i &lt; competenceList.size(); i++)</span>
+        {
+<span class="nc" id="L98">            query = em.createQuery(&quot;SELECT c FROM Competence AS c WHERE c.id = ?1&quot;, Competence.class);</span>
+<span class="nc" id="L99">            query.setParameter(1, Integer.parseInt(competenceList.get(i)));</span>
+<span class="nc" id="L100">            competence = (Competence) query.getSingleResult();</span>
+<span class="nc" id="L101">            competenceProfile = new Competence_Profile</span>
+<span class="nc" id="L102">                           (Double.parseDouble(yearsList.get(i)), competence, application);</span>
+<span class="nc" id="L103">            em.persist(competenceProfile);</span>
+        }        
+<span class="nc" id="L105">        return true;</span>
+    }
+    
+    /**
+     * Get completed applications of a specific applicant.
+     *
+     * @param username of the applicant
+     * @return listOfApplication list of applications
+     */
+    public List&lt;ApplicationDTO&gt; getApplicationsByUsername(String username)
+    {
+<span class="nc" id="L116">        Query query = em.createQuery(&quot;SELECT a FROM Application AS a WHERE &quot;</span>
+                + &quot;a.person = (SELECT p FROM Person AS p WHERE p.username = ?1)&quot;, ApplicationDTO.class);
+<span class="nc" id="L118">        query.setParameter(1, username);</span>
+<span class="nc" id="L119">        return query.getResultList();</span>
+    }
+    
+    /**
+     * Get name of a status by id.
+     *
+     * @param id status of id number
+     * @param lang code
+     * @return name of status
+     */
+    public String getStatusNameById(Integer id, String lang)
+    {
+<span class="nc" id="L131">        Query query = em.createQuery(&quot;SELECT sl.statusName FROM Status_Localized AS sl &quot;</span>
+                + &quot;WHERE sl.locale = (SELECT l FROM Locale AS l WHERE l.lang_code = ?1) &quot;
+                + &quot;AND sl.status = (SELECT s FROM Status AS s WHERE s.id = ?2)&quot;);
+<span class="nc" id="L134">        query.setParameter(1, lang);</span>
+<span class="nc" id="L135">        query.setParameter(2, id);</span>
+<span class="nc" id="L136">        return (String)query.getSingleResult();</span>
+    }
+    
+    /**
+     * Get a list of competence profiles of an applicant.
+     *
+     * @param id of the specific application
+     * @return listOfCompetenceProfiles list of competence profiles for the
+     * specific job
+     */
+    public List&lt;CompetenceProfileDTO&gt; getCompetenceProfileByApplicationId(Integer id){
+<span class="nc" id="L147">        Query query = em.createQuery(&quot;SELECT cp FROM Competence_Profile AS cp &quot;</span>
+                + &quot;WHERE cp.application = (SELECT a FROM Application AS a WHERE a.id = ?1)&quot;, 
+                        CompetenceProfileDTO.class);
+<span class="nc" id="L150">        query.setParameter(1, id);</span>
+<span class="nc" id="L151">        return query.getResultList();</span>
+    }
+    
+    /**
+     * Get list of available periods of a application.
+     *
+     * @param id of the specific application
+     * @return listOfAvailablePeriodsOfTheSpecificApplication list of 
+     * available periods of the specific application
+     */
+    public List&lt;AvailabilityDTO&gt; getAvailabilityByApplicationId(Integer id){
+<span class="nc" id="L162">        Query query = em.createQuery(&quot;SELECT av FROM Availability AS av &quot;</span>
+                + &quot;WHERE av.application = (SELECT a FROM Application AS a WHERE a.id = ?1)&quot;, 
+                        AvailabilityDTO.class);
+<span class="nc" id="L165">        query.setParameter(1, id);</span>
+<span class="nc" id="L166">        return query.getResultList();</span>
+    }
+    
+    /**
+     * Get the name for a specific competence.
+     *
+     * @param id of a specific competence
+     * @param lang code
+     * @return name of competence
+     */
+    public String getCompetenceNameById(Integer id, String lang){
+<span class="nc" id="L177">        Query query = em.createQuery(&quot;SELECT cl.competenceName FROM Competence_Localized AS cl &quot;</span>
+                + &quot;WHERE cl.competence = (SELECT c FROM Competence AS c WHERE c.id = ?1)&quot;
+                + &quot; AND cl.locale = (SELECT l FROM Locale AS l WHERE l.lang_code = ?2)&quot;);
+<span class="nc" id="L180">        query.setParameter(1, id);</span>
+<span class="nc" id="L181">        query.setParameter(2, lang);</span>
+<span class="nc" id="L182">        return (String)query.getSingleResult();</span>
+    }
+}        
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

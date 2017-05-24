@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:body>
+        <ui:composition template="/resources/view/template.xhtml">
+            <ui:define name="titled">#{messages.application}</ui:define>
+            <ui:define name="slide">
+                <h1>#{messages.applicationForJob}: 
+                    #{applicationManager.getJobNameById(applicationManager.specificApplication.job)}</h1>
+                <h:form>
+                    <h:outputText value="#{messages.dateAndTime}: #{applicationManager.specificApplication.dateMade}"/><br/>
+                    <h:outputText value="#{messages.status}: #{applicationManager.getStatusNameById
+                                                   (applicationManager.specificApplication.status)}" />
+                    <br/>
+                    <h3 style="text-decoration: underline;">#{messages.competence}:</h3>
+                    <ui:repeat value="#{applicationManager.getCompetenceAndYearList
+                                        (applicationManager.specificApplication.id)}" var="cProf" 
+                            rendered="#{applicationManager.getCompetenceAndYearList
+                                        (applicationManager.specificApplication.id) != null}">
+                        <li><h:outputText value="#{applicationManager.getCompetenceNameById(cProf.competence)} 
+                                          #{cProf.yearsOfExperience} #{messages.year}"/></li>
+                    </ui:repeat>
+                    
+                    <h3 style="text-decoration: underline;">#{messages.availablePeriod}:</h3>
+                    <ui:repeat value="#{applicationManager.getStartDateAndEndDateList
+                                        (applicationManager.specificApplication.id)}" var="aPer" 
+                            rendered="#{applicationManager.getStartDateAndEndDateList
+                                        (applicationManager.specificApplication.id) != null}">
+                        <li><h:outputText value="#{aPer.fromDate} --- #{aPer.toDate}"/></li>
+                    </ui:repeat>
+                    <br/>
+                    <h:commandButton value="#{messages.back}" action="completedApplications"/>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

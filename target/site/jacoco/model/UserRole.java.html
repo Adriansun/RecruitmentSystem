@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UserRole.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">UserRole.java</span></div><h1>UserRole.java</h1><pre class="source lang-java linenums">package model;
+
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+
+/**
+ * Class to create and store user roles.
+ */
+@Entity
+public class UserRole implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
+    @Id
+    @SequenceGenerator(name = &quot;userRoleIdSeq&quot;, sequenceName = &quot;USERROLE_ID_SEQ&quot;, allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = &quot;userRoleIdSeq&quot;)
+    @Column(name = &quot;id&quot;)
+    private Integer id;
+    
+    @OneToOne(optional = false)
+    @JoinColumn(name = &quot;person&quot;, referencedColumnName = &quot;username&quot;, nullable = false)   
+    private Person person;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;roletype&quot;, referencedColumnName = &quot;name&quot;, nullable = false)
+    private RoleType roletype;  
+    
+    /**
+     * Constructor.
+     */
+<span class="nc" id="L38">    public UserRole(){</span>
+<span class="nc" id="L39">    }</span>
+    
+    /**
+     * Constructor for user roles.
+     *
+     * @param person person this user role matters to
+     * @param roletype role type the person shall have
+     */
+<span class="nc" id="L47">    public UserRole(Person person, RoleType roletype){</span>
+<span class="nc" id="L48">        this.person = person;</span>
+<span class="nc" id="L49">        this.roletype = roletype;</span>
+<span class="nc" id="L50">    }</span>
+    
+    /**
+     * Get id of user role.
+     *
+     * @return id of user role
+     */
+    public Integer getId() {
+<span class="nc" id="L58">        return id;</span>
+    }
+    
+    /**
+     * Get persons username
+     *
+     * @return username of person
+     */
+    public String getPerson(){
+<span class="nc" id="L67">        return person.getUsername();</span>
+    }
+    
+    /**
+     * Set person to a specific user role.
+     *
+     * @param person person
+     */
+    public void setPerson(Person person){
+<span class="nc" id="L76">        this.person = person;</span>
+<span class="nc" id="L77">    }</span>
+    
+    /**
+     * Get the role type for this user role.
+     *
+     * @return getName of user role
+     */
+    public String getRoleType(){
+<span class="nc" id="L85">        return roletype.getName();</span>
+    }
+    
+    /**
+     * Set role type for a user role.
+     *
+     * @param roletype for a user role
+     */
+    public void setRoleType(RoleType roletype){
+<span class="nc" id="L94">        this.roletype = roletype;</span>
+<span class="nc" id="L95">    }</span>
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L99">        int hash = 0;</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        hash += (id != null ? id.hashCode() : 0);</span>
+<span class="nc" id="L101">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object object) {
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (!(object instanceof UserRole)) {</span>
+<span class="nc" id="L107">            return false;</span>
+        }
+<span class="nc" id="L109">        UserRole other = (UserRole) object;</span>
+<span class="nc bnc" id="L110" title="All 8 branches missed.">        return !((this.id == null &amp;&amp; other.id != null) || (this.id != null &amp;&amp; !this.id.equals(other.id)));</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L115">        return &quot;model.UserRole[ id=&quot; + id + &quot; ]&quot;;</span>
+    }   
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

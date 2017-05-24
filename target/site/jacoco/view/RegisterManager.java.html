@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RegisterManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">view</a> &gt; <span class="el_source">RegisterManager.java</span></div><h1>RegisterManager.java</h1><pre class="source lang-java linenums">package view;
+
+import view.validators.ValidSSN;
+import controller.Controller;
+import java.io.Serializable;
+import javax.ejb.EJB;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import view.validators.ValidEmail;
+
+/**
+ * Class handles all registrations/input by the user in the view.
+ */
+@Named(&quot;registerManager&quot;)
+@ConversationScoped
+<span class="nc" id="L18">public class RegisterManager implements Serializable </span>
+{
+    private static final long serialVersionUID = 16247164405L;
+    
+    @EJB
+    Controller controller;
+    
+    private String name;
+    private String surname;
+    @ValidSSN
+    private String ssn;
+    @ValidEmail
+    private String email;
+    private String username;
+    private String password;
+    private String repeatPassword;
+<span class="nc" id="L34">    private Boolean registerSuccess = false;</span>
+    private Boolean showPasswordMessage;
+    private Boolean showMessage;
+<span class="nc" id="L37">    private Boolean registrationFailed = false;</span>
+    
+    @Inject
+    private Conversation conversation; 
+    
+    /**
+     * Conversation scoped bean start.
+     * All values are stored. 
+     */
+    private void startConversation() {
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (conversation.isTransient()) {</span>
+<span class="nc" id="L48">            conversation.begin();</span>
+        }
+<span class="nc" id="L50">    }</span>
+
+    /**
+     * Conversation scoped bean stop.
+     * All values are removed.
+     */
+    private void stopConversation() {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (!conversation.isTransient()) {</span>
+<span class="nc" id="L58">            conversation.end();</span>
+        }
+<span class="nc" id="L60">    }</span>
+    
+    /**
+     * Conversation scoped bean end.
+     * Call stopConversation and abort registration.
+     */
+    public void endConversation()
+    {
+<span class="nc" id="L68">        stopConversation();</span>
+<span class="nc" id="L69">        registrationFailed = false;</span>
+<span class="nc" id="L70">    }</span>
+    
+    /**
+     * Sets user first name.
+     * @param name first name
+     */
+    public void setName(String name){
+<span class="nc" id="L77">        this.name = name;</span>
+<span class="nc" id="L78">    }</span>
+    
+    /**
+     * Get user first name.
+     *
+     * @return name first name
+     */
+    public String getName(){
+<span class="nc" id="L86">        return name;</span>
+    }
+    
+    /**
+     * Set user surname.
+     *
+     * @param surname surname
+     */
+    public void setSurname(String surname){
+<span class="nc" id="L95">        this.surname = surname;</span>
+<span class="nc" id="L96">    }</span>
+    
+    /**
+     * Get user surname.
+     *
+     * @return surname surname
+     */
+    public String getSurname(){
+<span class="nc" id="L104">        return surname;</span>
+    }
+    
+    /**
+     * Set user SSN.
+     *
+     * @param ssn SSN
+     */
+    public void setSsn(String ssn){
+<span class="nc" id="L113">        this.ssn = ssn;</span>
+<span class="nc" id="L114">    }</span>
+    
+    /**
+     * Get user SSN.
+     *
+     * @return ssn SSN
+     */
+    public String getSsn(){
+<span class="nc" id="L122">        return ssn;</span>
+    }
+    
+    /**
+     * Set user e-mail.
+     *
+     * @param email e-mail
+     */
+    public void setEmail(String email){
+<span class="nc" id="L131">        this.email = email;</span>
+<span class="nc" id="L132">    }</span>
+    
+    /**
+     * Get user e-mail.
+     *
+     * @return email e-mail
+     */
+    public String getEmail(){
+<span class="nc" id="L140">        return email;</span>
+    }
+    
+    /**
+     * Set user username.
+     *
+     * @param username username
+     */
+    public void setUsername(String username){
+<span class="nc" id="L149">        this.username = username;</span>
+<span class="nc" id="L150">    }</span>
+    
+    /**
+     * Get user username.
+     *
+     * @return username username
+     */
+    public String getUsername(){
+<span class="nc" id="L158">        return username;</span>
+    }
+    
+    /**
+     * Set user password.
+     *
+     * @param password password
+     */
+    public void setPassword(String password){
+<span class="nc" id="L167">        this.password = password;</span>
+<span class="nc" id="L168">    }</span>
+    
+    /**
+     * Get user password.
+     *
+     * @return password password
+     */
+    public String getPassword(){
+<span class="nc" id="L176">        return password;</span>
+    }
+    
+    /**
+     * Set user repeat of password.
+     *
+     * @param repeatPassword verify password
+     */
+    public void setRepeatPassword(String repeatPassword){
+<span class="nc" id="L185">        this.repeatPassword = repeatPassword;</span>
+<span class="nc" id="L186">    }</span>
+    
+    /**
+     * Get user repeated password
+     *
+     * @return repeatPassword repeated password 
+     */
+    public String getRepeatPassword(){
+<span class="nc" id="L194">        return repeatPassword;</span>
+    }
+    
+    /**
+     * Set a type of message boolean.
+     *
+     * @param show show message
+     */
+    public void setShowMessage(Boolean show){
+<span class="nc" id="L203">        this.showMessage = show;</span>
+<span class="nc" id="L204">    }</span>
+    
+    /**
+     * Message was shown boolean.
+     *
+     * @return showMessage showed message
+     */
+    public Boolean getShowMessage(){
+<span class="nc" id="L212">        return showMessage;</span>
+    }
+    
+    /**
+     * Boolean about if the registration was a success or not.
+     *
+     * @return registerSuccess boolean
+     */
+    public Boolean getRegisterSuccess(){
+<span class="nc" id="L221">        return registerSuccess;</span>
+    }
+    
+    /**
+     * Show password message boolean.
+     *
+     * @param show boolean
+     */
+    public void setShowPasswordMessage(Boolean show){
+<span class="nc" id="L230">        this.showPasswordMessage = show;</span>
+<span class="nc" id="L231">    }</span>
+    
+    /**
+     * Boolean, if the show password success message should be shown or not.
+     *
+     * @return showPasswordMessage boolean
+     */
+    public Boolean getShowPasswordMessage(){
+<span class="nc" id="L239">        return showPasswordMessage;</span>
+    } 
+    
+    /**
+     * Checks if password and verified password is the same. If the do not match
+     * then show message.
+     * 
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String register()
+    {
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        if(!(password.equals(repeatPassword)))</span>
+        {
+<span class="nc" id="L252">            showPasswordMessage = true; </span>
+<span class="nc" id="L253">            return &quot;&quot;;</span>
+        }
+        
+        try
+        {
+<span class="nc bnc" id="L258" title="All 2 branches missed.">            if(!controller.register(name, surname, ssn, email, username, password))</span>
+            {
+<span class="nc" id="L260">                registerSuccess = false;</span>
+<span class="nc" id="L261">                showMessage = true;</span>
+<span class="nc" id="L262">                return &quot;&quot;;</span>
+            }
+            
+<span class="nc" id="L265">            registerSuccess = true;</span>
+<span class="nc" id="L266">            registrationFailed = false;</span>
+        }
+<span class="nc" id="L268">        catch(Exception e)</span>
+        {
+<span class="nc" id="L270">            startConversation();</span>
+<span class="nc" id="L271">            name = null;</span>
+<span class="nc" id="L272">            surname = null;</span>
+<span class="nc" id="L273">            username = null;</span>
+<span class="nc" id="L274">            email = null;</span>
+<span class="nc" id="L275">            ssn = null;</span>
+<span class="nc" id="L276">            registrationFailed = true;</span>
+<span class="nc" id="L277">            registerSuccess = false;</span>
+<span class="nc" id="L278">        }</span>
+        
+<span class="nc" id="L280">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * Message if registration was a success or not.
+     *
+     * @return registrationFailed boolean
+     */
+    public Boolean getRegistrationFailed()
+    {
+<span class="nc" id="L290">        return registrationFailed;</span>
+    }
+    
+    /**
+     * Sets if registration failed.
+     *
+     * @param regFailed true if registration failed
+     */
+    public void setRegistrationFailed(Boolean regFailed)
+    {
+<span class="nc" id="L300">        this.registrationFailed = regFailed;</span>
+<span class="nc" id="L301">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

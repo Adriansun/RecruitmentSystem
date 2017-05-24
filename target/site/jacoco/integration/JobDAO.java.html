@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JobDAO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">integration</a> &gt; <span class="el_source">JobDAO.java</span></div><h1>JobDAO.java</h1><pre class="source lang-java linenums">package integration;
+
+import DTO.JobDTO;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+/**
+ * Class process queries to the database about jobs.
+ */
+@Stateless
+@TransactionAttribute(TransactionAttributeType.MANDATORY)
+<span class="nc" id="L17">public class JobDAO {</span>
+    @PersistenceContext(unitName = &quot;Projektgrupp9PU&quot;)
+    private EntityManager em;
+    
+    /**
+     * List of all types of jobs.
+     *
+     * @param lang code
+     * @return jobList list of available jobs
+     */
+    public List&lt;JobDTO&gt; getJobs(String lang)
+    {
+<span class="nc" id="L29">        Query query = em.createQuery(&quot;SELECT jl FROM Job_Localized AS jl &quot;</span>
+                + &quot;WHERE jl.locale = (SELECT l FROM Locale AS l WHERE l.lang_code = ?1)&quot;);
+<span class="nc" id="L31">        query.setParameter(1, lang);</span>
+<span class="nc" id="L32">        return query.getResultList();</span>
+    }
+    
+    /**
+     * Search for a job based on id.
+     *
+     * @param id of job
+     * @param lang code
+     * @return jobId id of a job
+     */
+    public String getJobNameById(Integer id, String lang)
+    {
+<span class="nc" id="L44">        Query query = em.createQuery(&quot;SELECT jl.jobName FROM Job_Localized AS jl &quot;</span>
+                + &quot;WHERE jl.locale = (SELECT l FROM Locale AS l WHERE l.lang_code = ?1) &quot;
+                + &quot;AND jl.job = (SELECT j FROM Job AS j WHERE j.id = ?2)&quot;);
+<span class="nc" id="L47">        query.setParameter(1, lang);</span>
+<span class="nc" id="L48">        query.setParameter(2, id);</span>
+<span class="nc" id="L49">        return (String)query.getSingleResult();</span>
+    }
+}        
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

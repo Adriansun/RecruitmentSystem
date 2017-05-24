@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Competence_Localized.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">Competence_Localized.java</span></div><h1>Competence_Localized.java</h1><pre class="source lang-java linenums">package model;
+
+import DTO.CompetenceDTO;
+import java.io.Serializable;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+
+/**
+ * Class of translations of names.
+ */
+@Entity
+public class Competence_Localized implements Serializable, CompetenceDTO {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @SequenceGenerator(name = &quot;competenceLocalizedIdSeq&quot;, 
+            sequenceName = &quot;COMPETENCELOZALIZED_ID_SEQ&quot;, allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = &quot;competenceLocalizedIdSeq&quot;)
+    @Column(name = &quot;id&quot;)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = &quot;competenceName&quot;, nullable = false, unique = true)
+    private String competenceName;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;locale&quot;, referencedColumnName = &quot;id&quot;, nullable = false)
+    private Locale locale;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;competence&quot;, referencedColumnName = &quot;id&quot;, nullable = false)
+    private Competence competence;
+    
+    /**
+     * Sets the parameters of which language is to be used for the return 
+     * methods.
+     *
+     * @param competenceName competence name
+     * @param locale code
+     * @param competence number of years for a certain job
+     */
+    public Competence_Localized(String competenceName, Locale locale,
+                                Competence competence)
+<span class="nc" id="L49">    {</span>
+<span class="nc" id="L50">        this.competenceName = competenceName;</span>
+<span class="nc" id="L51">        this.locale = locale;</span>
+<span class="nc" id="L52">        this.competence = competence;</span>
+<span class="nc" id="L53">    }</span>
+
+    /**
+     * Constructor.
+     */
+<span class="nc" id="L58">    public Competence_Localized() {}</span>
+    
+    /**
+     * Get id of which row for the language.
+     *
+     * @return ID row number
+     */
+    public Integer getId() {
+<span class="nc" id="L66">        return id;</span>
+    }
+
+    /**
+     * Get the specific number in the localize column of which language to use.
+     *
+     * @return locale code
+     */
+    @Override
+    public String getLocale(){
+<span class="nc" id="L76">        return locale.getLangCode();</span>
+    }
+    
+    /**
+     * Set a certain number which represents which language that was requested
+     * to be used.
+     * 
+     * @param locale code
+     */
+    public void setLocale(Locale locale){
+<span class="nc" id="L86">        this.locale = locale;</span>
+<span class="nc" id="L87">    }</span>
+    
+    /**
+     * Get id of a specific competence.
+     *
+     * @return ID number of competence
+     */
+    @Override
+    public Integer getCompetence(){
+<span class="nc" id="L96">        return competence.getId();</span>
+    }
+    
+    /**
+     * Set a certain competence.
+     *
+     * @param competence competence
+     */
+    public void setCompetence(Competence competence){
+<span class="nc" id="L105">        this.competence = competence;</span>
+<span class="nc" id="L106">    }</span>
+    
+    /**
+     * Get competence name.
+     *
+     * @return name of competence
+     */
+    @Override
+    public String getCompetenceName(){
+<span class="nc" id="L115">        return competenceName;</span>
+    }
+    
+    /**
+     * Set a specific competence name.
+     *
+     * @param competenceName competence name
+     */
+    public void setCompetenceName(String competenceName){
+<span class="nc" id="L124">        this.competenceName = competenceName;</span>
+<span class="nc" id="L125">    }</span>
+    
+    @Override
+    public int hashCode() {
+<span class="nc" id="L129">        int hash = 0;</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        hash += (id != null ? id.hashCode() : 0);</span>
+<span class="nc" id="L131">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (!(object instanceof Competence_Localized)) {</span>
+<span class="nc" id="L138">            return false;</span>
+        }
+<span class="nc" id="L140">        Competence_Localized other = (Competence_Localized) object;</span>
+<span class="nc" id="L141">        return this.id.equals(other.id);    </span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L146">        return &quot;model.Competence_Localized[ id=&quot; + id + &quot; ]&quot;;</span>
+    }    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

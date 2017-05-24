@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Controller.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">controller</a> &gt; <span class="el_source">Controller.java</span></div><h1>Controller.java</h1><pre class="source lang-java linenums">package controller;
+
+import DTO.ApplicationDTO;
+import DTO.AvailabilityDTO;
+import DTO.CompetenceDTO;
+import DTO.CompetenceProfileDTO;
+import DTO.JobDTO;
+import integration.ApplicationDAO;
+import integration.JobDAO;
+import integration.RegisterDAO;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+/**
+ * Controller takes calls from the view and return them to the integration 
+ * layer and back.
+ */
+@Stateless
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+<span class="nc" id="L24">public class Controller {</span>
+    @EJB
+    private RegisterDAO registerDAO;
+    @EJB
+    private JobDAO jobDAO;
+    @EJB
+    private ApplicationDAO applicationDAO;
+
+    /**
+     * Calls loginAndRegisterDAO to register new applicant.
+     * @param name first name
+     * @param surname surname
+     * @param ssn social security number
+     * @param email e-mail
+     * @param username username
+     * @param password password
+     * @return Boolean about it it went well or not
+     */
+    public Boolean register(String name, String surname, String ssn, String email, String username, String password)
+    {
+<span class="nc" id="L44">        return registerDAO.register(name, surname, ssn, email, username, password);</span>
+    }
+    
+    /**
+     * Get list of available jobs.
+     * 
+     * @param lang language code
+     * @return list of all jobs
+     */
+    public List&lt;JobDTO&gt; getJobs(String lang)
+    {
+<span class="nc" id="L55">        return jobDAO.getJobs(lang);</span>
+    }
+    
+    /**
+     * Get job with a certain id.
+     * 
+     * @param id of job
+     * @param lang of job
+     * @return name required of job
+     */
+    public String getJobNameById(Integer id, String lang)
+    {
+<span class="nc" id="L67">        return jobDAO.getJobNameById(id, lang);</span>
+    }
+    
+    /**
+     * Get status of a name with a certain id.
+     * 
+     * @param id status
+     * @param lang code
+     * @return name of status
+     */
+    public String getStatusNameById(Integer id, String lang)
+    {
+<span class="nc" id="L79">        return applicationDAO.getStatusNameById(id, lang);</span>
+    }
+    
+    /**
+     * Get list of all competences.
+     * 
+     * @param lang code
+     * @return list of competences
+     */
+    public List&lt;CompetenceDTO&gt; getAllCompetences(String lang)
+    {
+<span class="nc" id="L90">        return applicationDAO.getAllCompetences(lang);</span>
+    }
+    
+    /**
+     * Calls DAO application to make a new application.
+     * 
+     * @param competenceList list of applicants competence
+     * @param yearsList list of years of competence
+     * @param fromDateList list of start dates
+     * @param toDateList list of end dates
+     * @param username of person
+     * @param jobId id of the specific job
+     * @return Boolean if it was any issues or not
+     */
+    public Boolean createApplication(ArrayList&lt;String&gt; competenceList, 
+                                     ArrayList&lt;String&gt; yearsList,
+                                     ArrayList&lt;String&gt; fromDateList,
+                                     ArrayList&lt;String&gt; toDateList,
+                                     String username, Integer jobId)
+    {
+<span class="nc" id="L110">        return applicationDAO.createApplication(competenceList, yearsList, </span>
+                                   fromDateList, toDateList, username, jobId);
+    }
+    
+    /**
+     * Get done applications of an applicant.
+     * 
+     * @param username of person
+     * @return applicantJobList applicants list of applied jobs
+     */
+    public List&lt;ApplicationDTO&gt; getApplicationsByUsername(String username)
+    {
+<span class="nc" id="L122">        return applicationDAO.getApplicationsByUsername(username);</span>
+    }
+    
+    /**
+     * Get list of competence profiles of an applicant.
+     *
+     * @param id of the applicant
+     * @return competenceList list of competence profiles
+     */
+    public List&lt;CompetenceProfileDTO&gt; getCompetenceProfileByApplicationId(Integer id)
+    {
+<span class="nc" id="L133">        return applicationDAO.getCompetenceProfileByApplicationId(id);</span>
+    }
+    
+    /**
+     * Get the name of a specific competence through id.
+     * 
+     * @param id of a competence
+     * @param lang code
+     * 
+     * @return name of a competence
+     */
+    public String getCompetenceNameById(Integer id, String lang)
+    {
+<span class="nc" id="L146">        return applicationDAO.getCompetenceNameById(id, lang);</span>
+    }
+    
+    /**
+     * Get list of available periods for a specific application.
+     * 
+     * @param id of the specific application
+     * @return listOfPeriods list of periods
+     */
+    public List&lt;AvailabilityDTO&gt; getAvailabilityByApplicationId(Integer id)
+    {
+<span class="nc" id="L157">        return applicationDAO.getAvailabilityByApplicationId(id);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

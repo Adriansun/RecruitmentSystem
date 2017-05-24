@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Competence_Profile.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">model</a> &gt; <span class="el_source">Competence_Profile.java</span></div><h1>Competence_Profile.java</h1><pre class="source lang-java linenums">package model;
+
+import java.io.Serializable;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+
+/**
+ * Class creates competence profiles.
+ */
+@Entity
+public class Competence_Profile implements Serializable {
+    @Id
+    @SequenceGenerator(name = &quot;competenceProfileIdSeq&quot;, 
+            sequenceName = &quot;COMPETENCEPROFILE_ID_SEQ&quot;, allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = &quot;competenceProfileIdSeq&quot;)
+    @Column(name = &quot;id&quot;)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = &quot;years_of_experience&quot; ,nullable = false, columnDefinition=&quot;Decimal(4,2)&quot;)
+    private Double years_of_experience;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;competence&quot;, referencedColumnName = &quot;id&quot;, nullable = false)
+    private Competence competence;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = &quot;application&quot;, referencedColumnName = &quot;id&quot;, nullable = false)
+    private Application application;
+
+    /**
+     * Constructor.
+     */
+<span class="nc" id="L40">    public Competence_Profile() {}</span>
+
+    /**
+     * Methods parameters contains years of experience, name of job and 
+     * application. One new profile for each user.
+     *
+     * @param years_of_experience year of experience
+     * @param competence of a certain job
+     * @param application application
+     */
+    public Competence_Profile(Double years_of_experience, Competence competence,
+                              Application application)
+<span class="nc" id="L52">    {</span>
+<span class="nc" id="L53">        this.years_of_experience = years_of_experience;</span>
+<span class="nc" id="L54">        this.competence = competence;</span>
+<span class="nc" id="L55">        this.application = application;</span>
+<span class="nc" id="L56">    }</span>
+    
+    /**
+     * Get id number of profile.
+     *
+     * @return ID nummer of profile
+     */
+    public Integer getId() {
+<span class="nc" id="L64">        return id;</span>
+    }
+    
+    /**
+     * Get id of a specific competence.
+     *
+     * @return ID of competence
+     */
+    public Integer getCompetence(){
+<span class="nc" id="L73">        return competence.getId();</span>
+    }
+    
+    /**
+     * Set a certain competence.
+     *
+     * @param competence competence
+     */
+    public void setCompetence(Competence competence){
+<span class="nc" id="L82">        this.competence = competence;</span>
+<span class="nc" id="L83">    }</span>
+    
+    /**
+     * Get number of years a person worked on a specific job.
+     *
+     * @return numberOfYears in a job
+     */
+    public Double getYearsOfExperience(){
+<span class="nc" id="L91">        return years_of_experience;</span>
+    }
+    
+    /**
+     * Set years of experience with in a certain job.
+     *
+     * @param years_of_experience number of experience
+     */
+    public void setYearsOfExperience(Double years_of_experience){
+<span class="nc" id="L100">        this.years_of_experience = years_of_experience;</span>
+<span class="nc" id="L101">    }</span>
+    
+    /**
+     * Get id of an application.
+     *
+     * @return ID of an application
+     */
+    public Integer getApplication(){
+<span class="nc" id="L109">        return application.getId();</span>
+    }
+    
+    /**
+     * Set application to database.
+     *
+     * @param application application
+     */
+    public void setApplication(Application application){
+<span class="nc" id="L118">        this.application = application;</span>
+<span class="nc" id="L119">    }</span>
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L123">        int hash = 0;</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        hash += (id != null ? id.hashCode() : 0);</span>
+<span class="nc" id="L125">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (!(object instanceof Competence_Profile)) {</span>
+<span class="nc" id="L132">            return false;</span>
+        }
+<span class="nc" id="L134">        Competence_Profile other = (Competence_Profile) object;</span>
+<span class="nc" id="L135">        return this.id.equals(other.id);</span>
+    }
+    
+    @Override
+    public String toString() {
+<span class="nc" id="L140">        return &quot;model.Competence_profile[ id=&quot; + id + &quot; ]&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>

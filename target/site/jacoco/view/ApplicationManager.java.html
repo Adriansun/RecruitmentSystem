@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ApplicationManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RecruitmentSystem</a> &gt; <a href="index.source.html" class="el_package">view</a> &gt; <span class="el_source">ApplicationManager.java</span></div><h1>ApplicationManager.java</h1><pre class="source lang-java linenums">package view;
+
+import DTO.ApplicationDTO;
+import DTO.AvailabilityDTO;
+import DTO.CompetenceDTO;
+import DTO.CompetenceProfileDTO;
+import controller.Controller;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
+import org.primefaces.event.SelectEvent;
+import view.validators.ValidYear;
+
+/**
+ * Class ApplicationManager takes care of everything related to applications
+ * in the view.
+ */
+@Named(&quot;applicationManager&quot;)
+@SessionScoped
+<span class="nc" id="L27">public class ApplicationManager implements Serializable </span>
+{
+    private static final long serialVersionUID = 16247164405L;
+    
+    @EJB
+    Controller controller;
+    
+    private List&lt;CompetenceDTO&gt; compList;
+<span class="nc" id="L35">    private ArrayList&lt;String&gt; competenceList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L36">    private ArrayList&lt;String&gt; yearsList = new ArrayList&lt;&gt;();</span>
+    private ArrayList&lt;String&gt; competenceAndYearList;
+<span class="nc" id="L38">    private ArrayList&lt;String&gt; fromDateList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L39">    private ArrayList&lt;String&gt; toDateList = new ArrayList&lt;&gt;();</span>
+    private ArrayList&lt;String&gt; startDateAndEndDateList;
+    private ApplicationDTO specificApplication;
+    
+    private String competence;
+    @ValidYear
+    private String years;
+    private Date startDate;
+    private Date endDate;
+    private Boolean showDateMessage;
+    private Boolean confirmSuccess;
+<span class="nc" id="L50">    private Boolean goToConfirm = false;</span>
+<span class="nc" id="L51">    private Boolean clickOnConfirm = false;</span>
+<span class="nc" id="L52">    private Boolean confirmFailed = false;</span>
+    
+    /**
+     * Get a competence.
+     *
+     * @return competence competence
+     */
+    public String getCompetence(){
+<span class="nc" id="L60">        return competence;</span>
+    }
+    
+    /**
+     * Set a competence.
+     *
+     * @param competence competence
+     */
+    public void setCompetence(String competence){
+<span class="nc" id="L69">        this.competence = competence;</span>
+<span class="nc" id="L70">    }</span>
+    
+    /**
+     * Get years of a competence.
+     *
+     * @return years of competence
+     */
+    public String getYears(){
+<span class="nc" id="L78">        return years;</span>
+    }
+    
+    /**
+     * Set years of competence.
+     *
+     * @param years of competence
+     */
+    public void setYears(String years){
+<span class="nc" id="L87">        this.years = years;</span>
+<span class="nc" id="L88">    }</span>
+    
+    private Competence[] comList;
+    
+    /**
+     * Get all types of competences and creates a list of them. This list is a
+     * drop down list in the view for the applicants.
+     * 
+     * @return comList is a list of competences
+     */
+    public Competence[] getCompetenceValue() 
+    {
+<span class="nc" id="L100">        comList = null;</span>
+        try
+        {
+<span class="nc" id="L103">            compList = controller.</span>
+<span class="nc" id="L104">                getAllCompetences(FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage());</span>
+<span class="nc" id="L105">            comList = new Competence[compList.size()];</span>
+            String comName, comId;
+<span class="nc" id="L107">            Boolean skip = false;</span>
+<span class="nc" id="L108">            ArrayList&lt;Competence&gt; alComp = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            for(CompetenceDTO compList1 : compList) {</span>
+<span class="nc" id="L110">                comId = compList1.getCompetence().toString();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                for(String competenceList1 : competenceList) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                    if(comId.equals(competenceList1)) {</span>
+<span class="nc" id="L113">                        skip = true;</span>
+<span class="nc" id="L114">                        break;</span>
+                    }
+<span class="nc" id="L116">                }</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                if(!skip) {</span>
+<span class="nc" id="L118">                    comName = compList1.getCompetenceName();</span>
+<span class="nc" id="L119">                    alComp.add(new Competence(comName, comId));</span>
+                }
+<span class="nc" id="L121">                skip = false;</span>
+<span class="nc" id="L122">            }</span>
+<span class="nc" id="L123">            comList = alComp.toArray(new Competence[alComp.size()]);</span>
+        }
+<span class="nc" id="L125">        catch(Exception e)</span>
+<span class="nc" id="L126">        {}</span>
+<span class="nc" id="L127">        return comList;</span>
+    }
+    
+    /** 
+     * If the list over added competences contains anything then an add button
+     * will be active for the user. If the list is empty the add button is 
+     * disabled.
+     * 
+     * @return boolean true if there is any competences in list
+     */
+    public Boolean getEnableButton(){
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        return comList.length &gt; 0;</span>
+    }
+    
+    /**
+     * Add a competence to the private competence list.
+     *
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String addCompetence()
+    {
+<span class="nc" id="L148">        competenceList.add(competence);</span>
+<span class="nc" id="L149">        yearsList.add(years);</span>
+<span class="nc" id="L150">        competence = null;</span>
+<span class="nc" id="L151">        years = null;</span>
+<span class="nc" id="L152">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * List with the private competence of a person.
+     *
+     * @return competenceAndYearList list of personal competence
+     */
+    public ArrayList&lt;String&gt; getCompetenceAndYearList()
+    {
+<span class="nc" id="L162">        clickOnConfirm = false;</span>
+<span class="nc" id="L163">        confirmSuccess = false;</span>
+        
+<span class="nc" id="L165">        ArrayList&lt;String&gt; al = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L166">        competenceAndYearList = new ArrayList&lt;&gt;();</span>
+        
+        String c;
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        for(int i = 0; i &lt; competenceList.size(); i++) {</span>
+<span class="nc" id="L170">            c = competenceList.get(i);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            for(int j = 0; j &lt; compList.size(); j++)</span>
+            {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                if(c.equals(compList.get(j).getCompetence().toString()))</span>
+                {
+<span class="nc" id="L175">                    al.add(compList.get(j).getCompetenceName());</span>
+<span class="nc" id="L176">                    break;</span>
+                }
+            }
+        }
+        
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        for(int i = 0; i &lt; al.size(); i++) {</span>
+<span class="nc" id="L182">            competenceAndYearList.add(al.get(i) + &quot; &quot; + yearsList.get(i));</span>
+        }
+        
+<span class="nc" id="L185">        return competenceAndYearList;</span>
+    }
+
+    /**
+     * List with competences for a specific application.
+     *
+     * @param id of the specific application
+     * @return l list of competences for an application
+     */
+    public List&lt;CompetenceProfileDTO&gt; getCompetenceAndYearList(Integer id)
+    {
+<span class="nc" id="L196">        List&lt;CompetenceProfileDTO&gt; l = null;</span>
+        try
+        {
+<span class="nc" id="L199">            l = controller.getCompetenceProfileByApplicationId(id);</span>
+        }
+<span class="nc" id="L201">        catch(Exception e)</span>
+<span class="nc" id="L202">        {}</span>
+<span class="nc" id="L203">        return l;</span>
+    }
+    
+    /**
+     * Event listener: user gets available dates when user selects date section.
+     *
+     * @param event listener
+     */
+    public void onDateSelect(SelectEvent event) {
+<span class="nc" id="L212">        FacesContext facesContext = FacesContext.getCurrentInstance();</span>
+<span class="nc" id="L213">        SimpleDateFormat format = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</span>
+<span class="nc" id="L214">        facesContext.addMessage(null, </span>
+<span class="nc" id="L215">                new FacesMessage(FacesMessage.SEVERITY_INFO, &quot;Date Selected&quot;, format.format(event.getObject())));</span>
+<span class="nc" id="L216">    }</span>
+    
+    /**
+     * Get availability of start dates.
+     *
+     * @return startDate start date
+     */
+    public Date getStartDate() {
+<span class="nc" id="L224">        return startDate;</span>
+    }
+ 
+    /**
+     * Set availability of start dates.
+     *
+     * @param startDate start date
+     */
+    public void setStartDate(Date startDate) {
+<span class="nc" id="L233">        this.startDate = startDate;</span>
+<span class="nc" id="L234">    }</span>
+    
+    /**
+     * Get availability of end dates.
+     *
+     * @return endDate end date
+     */
+    public Date getEndDate() {
+<span class="nc" id="L242">        return endDate;</span>
+    }
+ 
+    /**
+     * Set availability of end dates.
+     *
+     * @param endDate end date 
+     */
+    public void setEndDate(Date endDate) {
+<span class="nc" id="L251">        this.endDate = endDate;</span>
+<span class="nc" id="L252">    }</span>
+    
+    /**
+     * Add availability of dates to availability list.
+     * 
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String addDates()
+    {
+<span class="nc bnc" id="L261" title="All 2 branches missed.">        if(startDate.after(endDate))</span>
+        {
+<span class="nc" id="L263">            showDateMessage = true;</span>
+<span class="nc" id="L264">            return &quot;&quot;;</span>
+        }
+        
+<span class="nc" id="L267">        showDateMessage = false;    </span>
+<span class="nc" id="L268">        SimpleDateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</span>
+<span class="nc" id="L269">        fromDateList.add(df.format(startDate));</span>
+<span class="nc" id="L270">        toDateList.add(df.format(endDate));</span>
+<span class="nc" id="L271">        startDate = null;</span>
+<span class="nc" id="L272">        endDate = null;</span>
+<span class="nc" id="L273">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * Error message about start and end dates.
+     *
+     * @return boolean true if an error occoured with start and end dates
+     */
+    public Boolean getShowDateMessage(){
+<span class="nc" id="L282">        return showDateMessage;</span>
+    }
+    
+    /**
+     * Creates a list of start and end dates. User gets a list in the view.
+     *
+     * @return startDateAndEndDateList list of start and end dates
+     */
+    public ArrayList&lt;String&gt; getStartDateAndEndDateList()
+    {
+<span class="nc bnc" id="L292" title="All 4 branches missed.">        goToConfirm = !(fromDateList.isEmpty() || fromDateList == null);</span>
+        
+<span class="nc" id="L294">        ArrayList&lt;String&gt; al = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L295">        startDateAndEndDateList = new ArrayList&lt;&gt;(); </span>
+        
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        for(int i = 0; i &lt; fromDateList.size(); i++)</span>
+        {
+<span class="nc" id="L299">            startDateAndEndDateList.add(fromDateList.get(i) + &quot; --- &quot; + toDateList.get(i));</span>
+        }
+        
+<span class="nc" id="L302">        return startDateAndEndDateList;</span>
+    }
+    
+    /**
+     * Get availability periods for a specific application.
+     *
+     * @param id of the specific application
+     * @return l list with availability periods
+     */
+    public List&lt;AvailabilityDTO&gt; getStartDateAndEndDateList(Integer id)
+    {
+<span class="nc" id="L313">        List&lt;AvailabilityDTO&gt; l = null;</span>
+        try
+        {
+<span class="nc" id="L316">            l = controller.getAvailabilityByApplicationId(id);</span>
+        }
+<span class="nc" id="L318">        catch(Exception e)</span>
+<span class="nc" id="L319">        {}</span>
+<span class="nc" id="L320">        return l;</span>
+    }
+    
+    /**
+     * User removes a competens that previously was set.
+     *
+     * @param currentComp chosen competence to remove
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String removeCurrentComp(String currentComp)
+    {
+        String[] arr;
+<span class="nc" id="L332">        String c = &quot;&quot;;</span>
+<span class="nc" id="L333">        String value = &quot;&quot;;</span>
+        
+<span class="nc" id="L335">        arr = currentComp.split(&quot; &quot;);</span>
+<span class="nc" id="L336">        int j = 0;</span>
+<span class="nc" id="L337">        String y = &quot;&quot;;</span>
+
+        while(true)
+        {
+            try 
+            {
+<span class="nc" id="L343">                Double.parseDouble(arr[j]);</span>
+<span class="nc" id="L344">                y = arr[j];</span>
+<span class="nc" id="L345">                break;</span>
+            } 
+<span class="nc" id="L347">            catch (NumberFormatException nfe) </span>
+            {
+<span class="nc" id="L349">                c += arr[j] + &quot; &quot;;</span>
+            }
+<span class="nc" id="L351">            j++;</span>
+        }
+        
+        //Get competence id
+<span class="nc bnc" id="L355" title="All 2 branches missed.">        for (CompetenceDTO compList1 : compList) {</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">            if ((compList1.getCompetenceName() + &quot; &quot;).equals(c)) </span>
+            {
+<span class="nc" id="L358">                value = compList1.getCompetence().toString();</span>
+<span class="nc" id="L359">                break;</span>
+            }
+<span class="nc" id="L361">        }</span>
+        
+        //Get position in competence list 
+<span class="nc" id="L364">        int pos = 0;</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">        for(int i = 0; i &lt; competenceList.size(); i++)</span>
+        {
+<span class="nc bnc" id="L367" title="All 2 branches missed.">            if(competenceList.get(i).equals(value))</span>
+            {
+<span class="nc" id="L369">                pos = i;</span>
+<span class="nc" id="L370">                break;</span>
+            }
+        }
+<span class="nc" id="L373">        competenceList.remove(value);</span>
+<span class="nc" id="L374">        yearsList.remove(pos);</span>
+        
+<span class="nc" id="L376">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * Remove a specific period.
+     *
+     * @param currentPeriod current period
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String removeCurrentPeriod(String currentPeriod)
+    {
+<span class="nc" id="L387">        String[] arr = currentPeriod.split(&quot; &quot;);</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">        for(int i = 0; i &lt; fromDateList.size(); i++)</span>
+        {
+<span class="nc bnc" id="L390" title="All 4 branches missed.">            if(fromDateList.get(i).equals(arr[0]) &amp;&amp; toDateList.get(i).equals(arr[2]))</span>
+            {
+<span class="nc" id="L392">                fromDateList.remove(i);</span>
+<span class="nc" id="L393">                toDateList.remove(i);</span>
+<span class="nc" id="L394">                break;</span>
+            }
+        }
+        
+<span class="nc bnc" id="L398" title="All 4 branches missed.">        goToConfirm = !(fromDateList.isEmpty() || fromDateList == null);</span>
+<span class="nc" id="L399">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * Remove all competences and periods.
+     *
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String clearAll()
+    {
+<span class="nc" id="L409">        competenceList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L410">        yearsList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L411">        fromDateList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L412">        toDateList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L413">        confirmSuccess = false;</span>
+<span class="nc" id="L414">        goToConfirm = false;</span>
+<span class="nc" id="L415">        clickOnConfirm = false;</span>
+<span class="nc" id="L416">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * Checks that the applicant has at least once set a availability period.
+     *
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String checkValues()
+    {
+<span class="nc bnc" id="L426" title="All 4 branches missed.">        goToConfirm = !(fromDateList.isEmpty() || fromDateList == null);</span>
+<span class="nc" id="L427">        clickOnConfirm = true;</span>
+<span class="nc" id="L428">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * Checks if applicant can go on and confirm.
+     *
+     * @return boolean true yes else no
+     */
+    public Boolean getGoToConfirm()
+    {
+<span class="nc" id="L438">        return goToConfirm;</span>
+    }
+    
+    /**
+     * Checks if the applicant has pushed the confirm button.
+     *
+     * @return boolean true if yes else no
+     */
+    public Boolean getClickOnConfirm()
+    {
+<span class="nc" id="L448">        return clickOnConfirm;</span>
+    }
+    
+    /**
+     * Used to pass the application and send it to the database.
+     *
+     * @return JSF version 2.2 bug - Empty string
+     */
+    public String confirmApplication()
+    {
+        String username = 
+<span class="nc" id="L459">               FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(&quot;username&quot;);</span>
+<span class="nc" id="L460">        Integer jobId = Integer.parseInt(</span>
+<span class="nc" id="L461">                FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(&quot;jobId&quot;));</span>
+        try
+        {
+<span class="nc" id="L464">            controller.createApplication</span>
+<span class="nc" id="L465">                (competenceList, yearsList, fromDateList, toDateList, username, jobId);</span>
+<span class="nc" id="L466">            confirmSuccess = true;</span>
+<span class="nc" id="L467">            competenceList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L468">            yearsList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L469">            fromDateList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L470">            toDateList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L471">            goToConfirm = false;</span>
+<span class="nc" id="L472">            clickOnConfirm = false;</span>
+        }
+<span class="nc" id="L474">        catch(Exception e)</span>
+        {
+<span class="nc" id="L476">            confirmFailed = true;</span>
+<span class="nc" id="L477">        }        </span>
+<span class="nc" id="L478">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * Shows success or not message.
+     *
+     * @return boolean
+     */
+    public Boolean getConfirmSuccess(){
+<span class="nc" id="L487">        return confirmSuccess;</span>
+    }
+    
+    /**
+     * Get list of finished applications for a specific user.
+     *
+     * @param username user
+     * @return l list with applications that have been finished
+     */
+    public List&lt;ApplicationDTO&gt; getApplicationList(String username)
+    {
+<span class="nc" id="L498">        List&lt;ApplicationDTO&gt; l = null;</span>
+        try
+        {
+<span class="nc" id="L501">            l = controller.getApplicationsByUsername(username);</span>
+        }
+<span class="nc" id="L503">        catch(Exception e)</span>
+<span class="nc" id="L504">        {}</span>
+<span class="nc" id="L505">        return l;</span>
+    }
+    
+    /**
+     * Get a jobs name by id.
+     *
+     * @param id job id
+     * @return s specific job name
+     */
+    public String getJobNameById(Integer id)
+    {
+<span class="nc" id="L516">        String s = null;</span>
+        try
+        {
+<span class="nc" id="L519">            s = controller.getJobNameById(id, </span>
+<span class="nc" id="L520">                    FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage());</span>
+        }
+<span class="nc" id="L522">        catch(Exception e)</span>
+<span class="nc" id="L523">        {}</span>
+<span class="nc" id="L524">        return s;</span>
+    }
+    
+    /**
+     * Get competence name by id.
+     *
+     * @param id of a specific competence
+     * @return s specific competence name
+     */
+    public String getCompetenceNameById(Integer id)
+    {
+<span class="nc" id="L535">        String s = null;</span>
+        try
+        {
+<span class="nc" id="L538">            s = controller.getCompetenceNameById(id, </span>
+<span class="nc" id="L539">                    FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage());</span>
+        }
+<span class="nc" id="L541">        catch(Exception e)</span>
+<span class="nc" id="L542">        {}</span>
+<span class="nc" id="L543">        return s;</span>
+    }
+    
+    /**
+     * Get name of a status by id.
+     *
+     * @param id of a specific id
+     * @return s status of id
+     */
+    public String getStatusNameById(Integer id)
+    {
+<span class="nc" id="L554">        String s = null;</span>
+        try
+        {
+<span class="nc" id="L557">            s = controller.getStatusNameById(id, </span>
+<span class="nc" id="L558">                    FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage());</span>
+        }
+<span class="nc" id="L560">        catch(Exception e)</span>
+<span class="nc" id="L561">        {}</span>
+<span class="nc" id="L562">        return s;</span>
+    }
+    
+    /**
+     * Set a specific application.
+     *
+     * @param specificApplication specific application
+     */
+    public void setSpecificApplication(ApplicationDTO specificApplication){
+<span class="nc" id="L571">        this.specificApplication = specificApplication;</span>
+<span class="nc" id="L572">    }</span>
+    
+    /**
+     * Get the specific application.
+     *
+     * @return specificApplication specific application
+     */
+    public ApplicationDTO getSpecificApplication(){
+<span class="nc" id="L580">        return specificApplication;</span>
+    }
+    
+    /**
+     * Message user if the application was a success or not.
+     *
+     * @return boolean true if success
+     */
+    public Boolean getConfirmFailed()
+    {
+<span class="nc" id="L590">        return confirmFailed;</span>
+    }
+    
+    /**
+     * Set a confirmation failure of application.
+     *
+     * @param confirmFailed true if fail
+     */
+    public void setConfirmFailed(Boolean confirmFailed)
+    {
+<span class="nc" id="L600">        this.confirmFailed = confirmFailed;</span>
+<span class="nc" id="L601">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.3.201502191951</span></div></body></html>
